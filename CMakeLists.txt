@@ -64,9 +64,9 @@ if(USE_HDF5)
     else()
         set(HDF5_USE_STATIC_LIBRARIES YES)
     endif()
-	find_package(HDF5 REQUIRED CXX)
-	if(HDF5_WITH_MPI)
-		find_package(MPI REQUIRED)
+    find_package(HDF5 REQUIRED CXX)
+    if(HDF5_WITH_MPI)
+        find_package(MPI REQUIRED)
     endif()
 endif()
 
@@ -98,14 +98,14 @@ if (BUILD_TESTS)
 endif()
 
 if(JAVA_BINDINGS)
-  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/JavaBindings.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/JavaBindings.cmake)
 endif()
 
 include(CMakePackageConfigHelpers)
 install(EXPORT fieldml-api-config
-	DESTINATION ${PACKAGE_CONFIG_DIR})
+    DESTINATION ${PACKAGE_CONFIG_DIR})
 WRITE_BASIC_PACKAGE_VERSION_FILE(${CMAKE_CURRENT_BINARY_DIR}/fieldml-api-config-version.cmake
-	COMPATIBILITY AnyNewerVersion)
+    COMPATIBILITY AnyNewerVersion)
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/fieldml-api-config-dependencies.cmake 
     "include(CMakeFindDependencyMacro)\r\n"
     "set(${PROJECT_NAME}_IMPORT_PREFIX \${_IMPORT_PREFIX})\r\n"
