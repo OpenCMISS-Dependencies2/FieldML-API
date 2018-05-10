@@ -47,6 +47,12 @@
 #include <iostream>
 #include <sstream>
 
+// assert macro from MacOS has started to interfer with the assert methods defined here.
+// Since assert's are not used by the code we will simple disable the macro.  An alternative
+// would be to use #pragma push_macro("assert");#undef assert;#pragme pop_macro("assert")
+#ifdef assert
+#undef assert
+#endif
 
 /**
  * The base class for all exceptions thrown by tests. These are caught and processed by the framework. 
