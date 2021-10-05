@@ -112,7 +112,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/fieldml-api-config-dependencies.cmake
 )
 file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/fieldml-api-config-dependencies.cmake "set(LIBXML2_FIND_SYSTEM ${LIBXML2_FIND_SYSTEM})\r\nfind_dependency(LibXml2 ${LIBXML2_VERSION})\r\n")
 if (USE_HDF5)
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/fieldml-api-config-dependencies.cmake "find_dependency(set(HDF5_FIND_SYSTEM ${HDF5_FIND_SYSTEM})\r\nHDF5 ${HDF5_VERSION})\r\n")
+    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/fieldml-api-config-dependencies.cmake "set(HDF5_FIND_SYSTEM ${HDF5_FIND_SYSTEM})\r\nfind_dependency(HDF5 ${HDF5_VERSION})\r\n")
 endif()
 if (JAVA_BINDINGS)
     # TODO
