@@ -78,6 +78,9 @@ target_compile_definitions(fieldml-core PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 if (WIN32)
     target_compile_definitions(fieldml-core PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
+if (ENABLE_PIC)
+    set_target_properties(fieldml-core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 # Install targets
 if(WIN32 AND BUILD_SHARED_LIBS)
