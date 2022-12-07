@@ -43,6 +43,10 @@ set( FIELDML_NAMESPACE_NAME FIELDML )
 project(fieldml VERSION 0.5.0 LANGUAGES CXX)
 enable_language(Fortran OPTIONAL)
 
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW)
+endif()
+
 option(USE_HDF5 "Do you want to use netgen (HDF5)?" NO)
 option(HDF5_WITH_MPI "Do you want to use MPI with HDF5?" NO)
 option(BUILD_TESTS "Build tests" ON)
