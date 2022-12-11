@@ -73,7 +73,11 @@ SET( FIELDML_API_PUBLIC_HDRS
 # Create library
 add_library(fieldml-core ${FIELDML_API_SRCS} ${FIELDML_API_PUBLIC_HDRS}
     ${FIELDML_API_PRIVATE_HDRS} ${LIBRARY_WIN32_XTRAS})
-target_link_libraries(fieldml-core xml2)
+if (TARGET xml2)
+    target_link_libraries(fieldml-core xml2)
+else()
+    target_link_libraries(fieldml-core LibXml2::LibXml2)
+endif()
 target_compile_definitions(fieldml-core PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 if (WIN32)
     target_compile_definitions(fieldml-core PRIVATE _CRT_SECURE_NO_WARNINGS)
