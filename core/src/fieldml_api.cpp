@@ -2485,7 +2485,10 @@ FmlErrorNumber Fieldml_SetBind( FmlSessionHandle handle, FmlObjectHandle objectH
 
     if( !checkIsEvaluatorTypeCompatible( session, argumentHandle, sourceHandle ) )
     {
-        return session->setError( FML_ERR_INVALID_PARAMETER_3, objectHandle, "Incompatible bind for " + string( Fieldml_GetObjectName( handle, argumentHandle ) ) );
+        char *argumentHandleName = Fieldml_GetObjectName( handle, argumentHandle );
+        FmlErrorNumber err = session->setError( FML_ERR_INVALID_PARAMETER_3, objectHandle, "Incompatible bind for " + string( argumentHandleName ) );
+        Fieldml_FreeString(argumentHandleName);
+        return err;
     }
 
     SimpleMap<FmlObjectHandle, FmlObjectHandle> *map = getBindMap( session, objectHandle );

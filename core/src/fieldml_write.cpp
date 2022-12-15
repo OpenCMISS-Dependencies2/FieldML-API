@@ -91,7 +91,9 @@ static void writeValues( xmlTextWriterPtr writer, const xmlChar *tag, int *value
 
 static void writeObjectName( xmlTextWriterPtr writer, const xmlChar *attribute, FmlSessionHandle handle, FmlObjectHandle object )
 {
-    xmlTextWriterWriteAttribute( writer, attribute, (const xmlChar*)Fieldml_GetObjectName( handle, object ) );
+    char *objectName = Fieldml_GetObjectName( handle, object );
+    xmlTextWriterWriteAttribute( writer, attribute, (const xmlChar*) objectName);
+    Fieldml_FreeString(objectName);
 }
 
 
@@ -99,7 +101,9 @@ static void writeObjectName( xmlTextWriterPtr writer, const xmlChar *attribute, 
 {
     parentName += ".";
     
-    string objectName = Fieldml_GetObjectName( handle, object );
+    char *objectNameC = Fieldml_GetObjectName( handle, object );
+    string objectName(objectNameC);
+    Fieldml_FreeString(objectNameC);
     
     if( objectName.compare( 0, parentName.length(), parentName ) == 0 )
     {
@@ -139,7 +143,9 @@ static int writeBinds( xmlTextWriterPtr writer, FmlSessionHandle handle, FmlObje
     if( indexArgument != FML_INVALID_HANDLE )
     {
         xmlTextWriterStartElement( writer, BIND_INDEX_TAG );
-        xmlTextWriterWriteAttribute( writer, ARGUMENT_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, indexArgument ) );
+        char *argument = Fieldml_GetObjectName( handle, indexArgument );
+        xmlTextWriterWriteAttribute( writer, ARGUMENT_ATTRIB, (const xmlChar*) argument);
+        Fieldml_FreeString(argument);
         xmlTextWriterWriteAttribute( writer, INDEX_NUMBER_ATTRIB, (const xmlChar*)"1" );
         xmlTextWriterEndElement( writer );
     }
@@ -154,8 +160,12 @@ static int writeBinds( xmlTextWriterPtr writer, FmlSessionHandle handle, FmlObje
         }
 
         xmlTextWriterStartElement( writer, BIND_TAG );
-        xmlTextWriterWriteAttribute( writer, ARGUMENT_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, argument ) );
-        xmlTextWriterWriteAttribute( writer, SOURCE_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, source ) );
+        char *argumentString = Fieldml_GetObjectName( handle, argument );
+        xmlTextWriterWriteAttribute( writer, ARGUMENT_ATTRIB, (const xmlChar*)argumentString );
+        Fieldml_FreeString(argumentString);
+        char * sourceString = Fieldml_GetObjectName( handle, source );
+        xmlTextWriterWriteAttribute( writer, SOURCE_ATTRIB, (const xmlChar*)sourceString );
+        Fieldml_FreeString(sourceString);
         xmlTextWriterEndElement( writer );
     }
     
@@ -184,7 +194,9 @@ static int writeArguments( xmlTextWriterPtr writer, FmlSessionHandle handle, Fml
         }
 
         xmlTextWriterStartElement( writer, ARGUMENT_TAG );
-        xmlTextWriterWriteAttribute( writer, NAME_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, argument ) );
+        char *argumentName = Fieldml_GetObjectName( handle, argument );
+        xmlTextWriterWriteAttribute( writer, NAME_ATTRIB, (const xmlChar*)argumentName );
+        Fieldml_FreeString(argumentName);
         xmlTextWriterEndElement( writer );
     }
     
@@ -309,13 +321,17 @@ static int writeMeshType( xmlTextWriterPtr writer, FmlSessionHandle handle, FmlO
     FmlObjectHandle elementsType = Fieldml_GetMeshElementsType( handle, object );
     if( elementsType != FML_INVALID_HANDLE )
     {
-        writeEnsembleType( writer, handle, elementsType, ELEMENTS_TAG, Fieldml_GetObjectName( handle, object ) );
+        char *objectName = Fieldml_GetObjectName( handle, object );
+        writeEnsembleType( writer, handle, elementsType, ELEMENTS_TAG, objectName );
+        Fieldml_FreeString(objectName);
     }
 
     FmlObjectHandle chartType = Fieldml_GetMeshChartType( handle, object );
     if( chartType != FML_INVALID_HANDLE )
     {
-        writeContinuousType( writer, handle, chartType, CHART_TAG, Fieldml_GetObjectName( handle, object ) );
+        char *objectName = Fieldml_GetObjectName( handle, object );
+        writeContinuousType( writer, handle, chartType, CHART_TAG, objectName );
+        Fieldml_FreeString(objectName);
     }
     
     xmlTextWriterStartElement( writer, SHAPES_TAG );
@@ -493,7 +509,9 @@ static int writeConstantEvaluator( xmlTextWriterPtr writer, FmlSessionHandle han
     xmlTextWriterStartElement( writer, CONSTANT_EVALUATOR_TAG );
     
     writeObjectName( writer, NAME_ATTRIB, handle, object );
-    xmlTextWriterWriteFormatAttribute( writer, VALUE_ATTRIB, "%s", Fieldml_GetConstantEvaluatorValueString( handle, object ) );
+    char *valueString = Fieldml_GetConstantEvaluatorValueString( handle, object );
+    xmlTextWriterWriteFormatAttribute( writer, VALUE_ATTRIB, "%s", valueString );
+    Fieldml_FreeString(valueString);
     writeObjectName( writer, VALUE_TYPE_ATTRIB, handle, Fieldml_GetValueType( handle, object ) );
 
     xmlTextWriterEndElement( writer );
@@ -518,7 +536,9 @@ static int writePiecewiseEvaluator( xmlTextWriterPtr writer, FmlSessionHandle ha
     {
         xmlTextWriterStartElement( writer, INDEX_EVALUATOR_TAG );
 
-        xmlTextWriterWriteFormatAttribute( writer, EVALUATOR_ATTRIB, "%s", Fieldml_GetObjectName( handle, indexEvaluator ) );
+        char *indexEvaluatorName = Fieldml_GetObjectName( handle, indexEvaluator );
+        xmlTextWriterWriteFormatAttribute( writer, EVALUATOR_ATTRIB, "%s", indexEvaluatorName );
+        Fieldml_FreeString(indexEvaluatorName);
         xmlTextWriterWriteFormatAttribute( writer, INDEX_NUMBER_ATTRIB, "%d", 1 );
 
         xmlTextWriterEndElement( writer );
@@ -534,7 +554,9 @@ static int writePiecewiseEvaluator( xmlTextWriterPtr writer, FmlSessionHandle ha
         
         if( defaultEvaluator != FML_INVALID_HANDLE )
         {
-            xmlTextWriterWriteFormatAttribute( writer, DEFAULT_ATTRIB, "%s", Fieldml_GetObjectName( handle, defaultEvaluator ) );
+            char *defaultEvaluatorName = Fieldml_GetObjectName( handle, defaultEvaluator );
+            xmlTextWriterWriteFormatAttribute( writer, DEFAULT_ATTRIB, "%s", defaultEvaluatorName );
+            Fieldml_FreeString(defaultEvaluatorName);
         }
     
         for( int i = 1; i <= count; i++ )
@@ -545,7 +567,9 @@ static int writePiecewiseEvaluator( xmlTextWriterPtr writer, FmlSessionHandle ha
             {
                 continue;
             }
-            writeComponentEvaluator( writer, EVALUATOR_MAP_ENTRY_TAG, VALUE_ATTRIB, element, Fieldml_GetObjectName( handle, evaluator ) );
+            char *evaluatorName = Fieldml_GetObjectName( handle, evaluator );
+            writeComponentEvaluator( writer, EVALUATOR_MAP_ENTRY_TAG, VALUE_ATTRIB, element, evaluatorName );
+            Fieldml_FreeString(evaluatorName);
         }
 
         xmlTextWriterEndElement( writer );
@@ -580,14 +604,18 @@ static void writeParameterIndexes( xmlTextWriterPtr writer, FmlSessionHandle han
                 continue;
             }
             xmlTextWriterStartElement( writer, INDEX_EVALUATOR_TAG );
-            xmlTextWriterWriteAttribute( writer, EVALUATOR_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, index ) );
+            char *indexName = Fieldml_GetObjectName( handle, index );
+            xmlTextWriterWriteAttribute( writer, EVALUATOR_ATTRIB, (const xmlChar*)indexName );
+            Fieldml_FreeString(indexName);
 
             if( !isSparse )
             {
             	FmlObjectHandle order = Fieldml_GetParameterIndexOrder( handle, object, i );
             	if( order != FML_INVALID_HANDLE )
             	{
-            		xmlTextWriterWriteAttribute( writer, ORDER_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, order ) );
+                    char *orderName = Fieldml_GetObjectName( handle, order );
+                    xmlTextWriterWriteAttribute( writer, ORDER_ATTRIB, (const xmlChar*)orderName );
+                    Fieldml_FreeString(orderName);
             	}
             }
 
@@ -604,7 +632,9 @@ static void writeDenseArrayData( xmlTextWriterPtr writer, FmlSessionHandle handl
     xmlTextWriterStartElement( writer, DENSE_ARRAY_DATA_TAG );
     
     FmlObjectHandle dataObject = Fieldml_GetDataSource( handle, object );
-    xmlTextWriterWriteAttribute( writer, DATA_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, dataObject ) );
+    char *objectName = Fieldml_GetObjectName( handle, dataObject );
+    xmlTextWriterWriteAttribute( writer, DATA_ATTRIB, (const xmlChar*)objectName );
+    Fieldml_FreeString(objectName);
     
     writeParameterIndexes( writer, handle, object, 0 );
 
@@ -618,8 +648,12 @@ static void writeDOKArrayData( xmlTextWriterPtr writer, FmlSessionHandle handle,
     
     FmlObjectHandle dataObject = Fieldml_GetDataSource( handle, object );
     FmlObjectHandle keyDataObject = Fieldml_GetKeyDataSource( handle, object );
-    xmlTextWriterWriteAttribute( writer,KEY_DATA_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, keyDataObject ) );
-    xmlTextWriterWriteAttribute( writer, VALUE_DATA_ATTRIB, (const xmlChar*)Fieldml_GetObjectName( handle, dataObject ) );
+    char *keyObjectName = Fieldml_GetObjectName( handle, keyDataObject );
+    xmlTextWriterWriteAttribute( writer,KEY_DATA_ATTRIB, (const xmlChar*)keyObjectName );
+    Fieldml_FreeString(keyObjectName);
+    char *valueObjectName = Fieldml_GetObjectName( handle, dataObject );
+    xmlTextWriterWriteAttribute( writer, VALUE_DATA_ATTRIB, (const xmlChar*)valueObjectName );
+    Fieldml_FreeString(valueObjectName);
     
     writeParameterIndexes( writer, handle, object, 0 );
     writeParameterIndexes( writer, handle, object, 1 );
@@ -673,7 +707,9 @@ static int writeAggregateEvaluator( xmlTextWriterPtr writer, FmlSessionHandle ha
         
         if( defaultEvaluator != FML_INVALID_HANDLE )
         {
-            xmlTextWriterWriteFormatAttribute( writer, DEFAULT_ATTRIB, "%s", Fieldml_GetObjectName( handle, defaultEvaluator ) );
+            char *defaultEvaluatorName = Fieldml_GetObjectName( handle, defaultEvaluator );
+            xmlTextWriterWriteFormatAttribute( writer, DEFAULT_ATTRIB, "%s", defaultEvaluatorName );
+            Fieldml_FreeString(defaultEvaluatorName);
         }
     
         for( int i = 1; i <= count; i++ )
@@ -684,7 +720,9 @@ static int writeAggregateEvaluator( xmlTextWriterPtr writer, FmlSessionHandle ha
             {
                 continue;
             }
-            writeComponentEvaluator( writer, COMPONENT_EVALUATOR_TAG, COMPONENT_ATTRIB, element, Fieldml_GetObjectName( handle, evaluator ) );
+            char *evaluatorName = Fieldml_GetObjectName( handle, evaluator );
+            writeComponentEvaluator( writer, COMPONENT_EVALUATOR_TAG, COMPONENT_ATTRIB, element, evaluatorName );
+            Fieldml_FreeString(evaluatorName);
         }
 
         xmlTextWriterEndElement( writer );
@@ -762,6 +800,7 @@ int writeFieldmlFile( FieldmlErrorHandler *errorHandler, FmlSessionHandle handle
     {
         xmlTextWriterWriteAttribute( writer, NAME_ATTRIB, (const xmlChar*)regionName );        
     }
+    free(const_cast<char*>(regionName));
     
     
     int importCount = Fieldml_GetImportSourceCount( handle );
