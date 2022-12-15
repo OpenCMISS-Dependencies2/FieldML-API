@@ -55,7 +55,7 @@ namespace StringUtil
 
     const std::string makeFilename( const std::string dir, const std::string file );
     
-    const bool safeString( const char *charString, std::string &target );
+    bool safeString( const char *charString, std::string &target );
 }
 
 #endif // H_STRING_UTIL

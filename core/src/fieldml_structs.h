@@ -53,9 +53,9 @@
 class FieldmlObject
 {
 public:
-    const FieldmlHandleType objectType;
     const std::string name;
-    
+    const FieldmlHandleType objectType;
+
     //Virtual objects are either imports, or objects which are strict sub-objects (e.g. component ensembles, mesh element/chart arguments)/
     const bool isVirtual;
 

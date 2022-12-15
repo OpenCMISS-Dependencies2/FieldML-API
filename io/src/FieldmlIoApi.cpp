@@ -85,8 +85,8 @@ FmlReaderHandle Fieldml_OpenReaderInternal( FmlSessionHandle handle, FmlObjectHa
     if( Fieldml_GetDataSourceType( handle, objectHandle ) == FML_DATA_SOURCE_ARRAY )
     {
         string root;
-        char *region_string = Fieldml_GetRegionRoot( handle );
-        if( !StringUtil::safeString( region_string, root ) )
+        char *regionString = Fieldml_GetRegionRoot( handle );
+        if( !StringUtil::safeString( regionString, root ) )
         {
             FieldmlIoSession::getSession().setError( FML_IOERR_CORE_ERROR );
         }
@@ -98,7 +98,7 @@ FmlReaderHandle Fieldml_OpenReaderInternal( FmlSessionHandle handle, FmlObjectHa
         		reader = ArrayDataReader::createWithBuffer( FieldmlIoSession::getSession().createContext( handle ),
         			root, objectHandle, buffer);
         }
-        Fieldml_FreeString(region_string);
+        Fieldml_FreeString(regionString);
     }
     else
     {
@@ -223,7 +223,8 @@ FmlWriterHandle Fieldml_OpenArrayWriter( FmlSessionHandle handle, FmlObjectHandl
     {
         FieldmlIoContext *context = FieldmlIoSession::getSession().createContext( handle );
         string root;
-        if( !StringUtil::safeString( Fieldml_GetRegionRoot( handle ), root ) )
+        char *regionString = Fieldml_GetRegionRoot( handle );
+        if( !StringUtil::safeString( regionString, root ) )
         {
             FieldmlIoSession::getSession().setError( FML_IOERR_CORE_ERROR );
         }
@@ -231,6 +232,7 @@ FmlWriterHandle Fieldml_OpenArrayWriter( FmlSessionHandle handle, FmlObjectHandl
         {
             writer = ArrayDataWriter::create( context, root, objectHandle, type, ( append == 1 ), sizes, rank );
         }
+        Fieldml_FreeString(regionString);
     }
     
 

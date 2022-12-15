@@ -77,7 +77,7 @@ namespace StringUtil
     }
 
 
-    const bool safeString( const char *charString, std::string &target )
+    bool safeString( const char *charString, std::string &target )
     {
         if( charString == NULL )
         {

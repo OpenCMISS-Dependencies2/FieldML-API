@@ -236,10 +236,10 @@ FmlObjectHandle getObjectAttribute( xmlNodePtr node, const xmlChar *attribute, P
         if( strcmp( objectName, nodeObjectName ) == 0 )
         {
             parseObjectNode( *i, state );
+            xmlFree(const_cast<char *>(nodeObjectName));
             break;
         }
-        if (nodeObjectName)
-        	xmlFree(const_cast<char *>(nodeObjectName));
+        xmlFree(const_cast<char *>(nodeObjectName));
     }
 
     FmlObjectHandle objectHandle = Fieldml_GetObjectByName( state.session, objectName );
@@ -338,14 +338,15 @@ public:
         const char *region = getStringAttribute( node, REGION_ATTRIB );
     
         int index = Fieldml_AddImportSource( state.session, location, region );
+        xmlFree(const_cast<char *>(region));
         if( index < 0 )
         {
             state.errorHandler->logError( "Invalid import source specification", location );
+            xmlFree(const_cast<char *>(location));
             return 1;
         }
 
         xmlFree(const_cast<char *>(location));
-        xmlFree(const_cast<char *>(region));
         
         ImportEntryParser importEntryParser( index );
         
@@ -467,7 +468,7 @@ public:
         int err;
         
         FmlObjectHandle dataSource = Fieldml_CreateArrayDataSource( state.session, name, resource, location, rank );
-				xmlFree(const_cast<char *>(location));
+        xmlFree(const_cast<char *>(location));
         if( dataSource == FML_INVALID_HANDLE )
         {
             state.errorHandler->logError( "Malformed ArrayDataSource" );
@@ -539,7 +540,6 @@ public:
     int parseNode( xmlNodePtr node, ParseState &state )
     {
         const char *name = getStringAttribute( node, NAME_ATTRIB );
-        
         xmlNodePtr description = getFirstChild( node, DATA_RESOURCE_DESCRIPTION_TAG );
         
         xmlNodePtr hrefDescription = getFirstChild( description, DATA_RESOURCE_HREF_TAG );
@@ -563,7 +563,7 @@ public:
             int err = textStringParser.parseNode( stringDescription, state );
             if( err != 0 )
             {
-				xmlFree(const_cast<char *>(name));
+                xmlFree(const_cast<char *>(name));
                 return err;
             }
         }
@@ -571,7 +571,7 @@ public:
         if( resource == FML_INVALID_HANDLE )
         {
             state.errorHandler->logError( "Invalid array data resource specification", name );
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return 1;
         }
         
@@ -579,10 +579,10 @@ public:
         int err = processChildren( node, ARRAY_DATA_SOURCE_TAG, state, arrayDataSourceParser );
         if( err != 0 )
         {
-			xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
-		xmlFree(const_cast<char *>(name));
+        xmlFree(const_cast<char *>(name));
         return 0;
     }
 };
@@ -649,7 +649,7 @@ public:
         
         if( Fieldml_SetIndexEvaluator( state.session, object, indexNumber, argument ) != FML_ERR_NO_ERROR )
         {
-						const char* argsAttrib = getStringAttribute( objectNode, ARGUMENT_ATTRIB );
+            const char* argsAttrib = getStringAttribute( objectNode, ARGUMENT_ATTRIB );
             state.errorHandler->logError( "Incompatible index bind", argsAttrib );
             xmlFree(const_cast<char *>(argsAttrib));
             return 1;
@@ -711,8 +711,10 @@ public:
         int err = processChildren( getFirstChild( objectNode, BINDINGS_TAG ), BIND_TAG, state, bindParser );
         if( err != 0 )
         {
+            xmlFree(const_cast<char *>(name));
             return err;
         }
+
         xmlFree(const_cast<char *>(name));
         return 0;
     }
@@ -814,7 +816,7 @@ public:
         FmlObjectHandle handle = Fieldml_CreateBooleanType( state.session, name );
         if( handle == FML_INVALID_HANDLE )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             state.errorHandler->logError( "BooleanType creation failed", name );
             return 1;
         }
@@ -964,6 +966,7 @@ public:
         int err = elementsParser.parseNode( elementsNode, state );
         if( err != 0 )
         {
+            xmlFree(const_cast<char *>(name));
             return err;
         }
         
@@ -979,7 +982,7 @@ public:
         err = chartParser.parseNode( chartNode, state );
         if( err != 0 )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
         
@@ -1154,7 +1157,7 @@ public:
         int err = processChildren( evaluatorsNode, EVALUATOR_MAP_ENTRY_TAG, state, piecewiseMapParser );
         if( err != 0 )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
     
@@ -1162,7 +1165,7 @@ public:
         err = processChildren( getFirstChild( objectNode, BINDINGS_TAG ), BIND_TAG, state, bindParser );
         if( err != 0 )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
     
@@ -1170,9 +1173,10 @@ public:
         err = processChildren( getFirstChild( objectNode, INDEX_EVALUATORS_TAG ), INDEX_EVALUATOR_TAG, state, indexEvaluatorParser );
         if( err != 0 )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
+
         xmlFree(const_cast<char *>(name));
         return 0;
     }
@@ -1247,7 +1251,7 @@ public:
         int err = processChildren( evaluatorsNode, COMPONENT_EVALUATOR_TAG, state, aggregateMapParser );
         if( err != 0 )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
     
@@ -1255,7 +1259,7 @@ public:
         err = processChildren( getFirstChild( objectNode, BINDINGS_TAG ), BIND_TAG, state, bindParser );
         if( err != 0 )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
         
@@ -1263,7 +1267,7 @@ public:
         err = processChildren( getFirstChild( objectNode, BINDINGS_TAG ), BIND_INDEX_TAG, state, bindIndexParser );
         if( err != 0 )
         {
-						xmlFree(const_cast<char *>(name));
+            xmlFree(const_cast<char *>(name));
             return err;
         }
         xmlFree(const_cast<char *>(name));
@@ -1353,7 +1357,7 @@ public:
             int err = processChildren( getFirstChild( denseNode, DENSE_INDEXES_TAG ), INDEX_EVALUATOR_TAG, state, parameterIndexEvaluatorParser );
             if( err != 0 )
             {
-								xmlFree(const_cast<char *>(name));
+                xmlFree(const_cast<char *>(name));
                 return err;
             }
         }
@@ -1386,7 +1390,7 @@ public:
             int err = processChildren( getFirstChild( dokNode, SPARSE_INDEXES_TAG ), INDEX_EVALUATOR_TAG, state, denseIndexEvaluatorParser );
             if( err != 0 )
             {
-								xmlFree(const_cast<char *>(name));
+                xmlFree(const_cast<char *>(name));
                 return err;
             }
             
@@ -1394,7 +1398,7 @@ public:
             err = processChildren( getFirstChild( dokNode, DENSE_INDEXES_TAG ), INDEX_EVALUATOR_TAG, state, sparseIndexEvaluatorParser );
             if( err != 0 )
             {
-								xmlFree(const_cast<char *>(name));
+                xmlFree(const_cast<char *>(name));
                 return err;
             }
         }
@@ -1618,7 +1622,7 @@ int FieldmlDOM::parseFieldmlFile( const char *filename, FieldmlErrorHandler *err
     }
     /* free up the parser context */
     xmlFreeParserCtxt( ctxt );
-    
+
     return 0;
 }
 
@@ -1665,6 +1669,6 @@ int FieldmlDOM::parseFieldmlString( const char *string, const char *stringDescri
     }
 
     xmlFreeParserCtxt( ctxt );
-    
+
     return 0;
 }

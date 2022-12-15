@@ -510,7 +510,7 @@ FmlSessionHandle Fieldml_CreateFromFile( const char * filename )
             session->region->finalize();
         }
     }
-    
+
     return session->getSessionHandle();
 }
 
