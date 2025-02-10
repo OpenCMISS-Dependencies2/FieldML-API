@@ -36,7 +36,7 @@
  # ***** END LICENSE BLOCK ***** */
 
 # Set the minimum version of cmake required to 3.0
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.15 )
 
 # Set this namespace to keep these options seperate from other project options
 set( FIELDML_NAMESPACE_NAME FIELDML )
@@ -56,9 +56,12 @@ if (FORTRAN_BINDINGS AND NOT CMAKE_Fortran_COMPILER)
     message(WARNING "No Fortran compiler found but FORTRAN_BINDINGS requested. Disabling.")
 endif()
 option(JAVA_BINDINGS "Do you want to build the Java bindings" NO)
-set(PACKAGE_CONFIG_DIR "lib/cmake" CACHE STRING "Directory for package config files (relative to CMAKE_INSTALL_PREFIX)")
+set(PACKAGE_CONFIG_DIR "lib/cmake/FieldML-API" CACHE STRING "Directory for package config files (relative to CMAKE_INSTALL_PREFIX)")
 # Further options:
 # CMAKE_POSITION_INDEPENDENT_CODE=YES for -fPIC constant (is also passed in from OpenCMISS-main build script)
+
+message(STATUS "PAKAGE_CONFIG_DIR = '${PACKAGE_CONFIG_DIR}'")
+
 
 find_package(LibXml2 REQUIRED)
 if(USE_HDF5)
